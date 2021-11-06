@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platformservice
+  template:
+    metadata:
+      labels:
+        app: platformservice
+        editor: vscode
+    spec:
+      containers:
+        - name:  platformservice
+          image:  kolan1992/platform.api:alpha
