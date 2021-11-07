@@ -44,10 +44,7 @@ public class PlatformRepository : IPlatformRepository
 
     public async ValueTask CreatePlatform(Platform platform)
     {
-        if (platform == null)
-        {
-            throw new ArgumentNullException(nameof(platform));
-        }
+        if (platform == null) throw new ArgumentNullException(nameof(platform));
         await appDbContext.Platforms.AddAsync(platform);
     }
 }

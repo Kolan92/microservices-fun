@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PlatformService.Api.Models;
+namespace PlatformService.Api.PublicModels;
 
-public class Platform
+public class PlatformCreate
 {
-    [Key] [Required] public int Id { get; set; }
-
     [Required] public string Name { get; set; }
 
     [Required] public string Publisher { get; set; }

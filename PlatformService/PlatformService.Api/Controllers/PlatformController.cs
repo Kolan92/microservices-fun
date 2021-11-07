@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlatformService.Api.Data;
 using PlatformService.Api.Models;
 using PlatformService.Api.PublicModels;
+using PlatformService.Api.SyncDataServices.Http;
 
 namespace PlatformService.Api.Controllers;
 
@@ -13,14 +14,15 @@ namespace PlatformService.Api.Controllers;
 [ApiController]
 public class PlatformController : ControllerBase
 {
-
-    private readonly IPlatformRepository platformRepository;
     private readonly IMapper mapper;
-
-    public PlatformController(IPlatformRepository platformRepository, IMapper mapper)
+    private readonly IPlatformRepository platformRepository;
+    private readonly ICommandDataClient commandDataClient;
+    
+    public PlatformController(IPlatformRepository platformRepository, IMapper mapper, ICommandDataClient commandDataClient)
     {
         this.platformRepository = platformRepository;
         this.mapper = mapper;
+        this.commandDataClient = commandDataClient;
     }
 
     [HttpGet]
@@ -36,28 +38,24 @@ public class PlatformController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var platform = await platformRepository.GetPlatformById(id);
-        if (platform == null)
-        {
-            return NotFound();
-        }
+        if (platform == null) return NotFound();
 
         var model = mapper.Map<PlatformRead>(platform);
         return new OkObjectResult(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([Required] PlatformCreate platformCreate)
+    public async Task<ActionResult<PlatformRead>> Create([Required] PlatformCreate platformCreate)
     {
         var platform = mapper.Map<Platform>(platformCreate);
-        if (platform == null)
-        {
-            return BadRequest();
-        }
+        if (platform == null) return BadRequest();
 
         await platformRepository.CreatePlatform(platform);
         platformRepository.SaveChanges();
 
         var platformRead = mapper.Map<PlatformRead>(platform);
-        return CreatedAtRoute(nameof(GetById), new {Id= platformRead.Id}, platform);
+        await commandDataClient.SendPlatformToCommand(platformRead);
+        
+        return CreatedAtRoute(nameof(GetById), new { platformRead.Id }, platform);
     }
 }

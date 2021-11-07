@@ -19,12 +19,13 @@ public static class DatabaseSetup
             Console.WriteLine("No data is seeded to database");
             return;
         }
+
         Console.WriteLine("Seeding database");
-      
+
         dbContext.Platforms.AddRange(
-            new Platform {Name="Dot Net", Publisher="Microsoft", Cost="Free"},
-            new Platform {Name="SQL Server Express", Publisher="Microsoft",  Cost="Free"},
-            new Platform {Name="Kubernetes", Publisher="Cloud Native Computing Foundation",  Cost="Free"}
+            new Platform { Name = "Dot Net", Publisher = "Microsoft", Cost = "Free" },
+            new Platform { Name = "SQL Server Express", Publisher = "Microsoft", Cost = "Free" },
+            new Platform { Name = "Kubernetes", Publisher = "Cloud Native Computing Foundation", Cost = "Free" }
         );
 
         dbContext.SaveChanges();

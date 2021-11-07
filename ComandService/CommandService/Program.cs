@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using PlatformService.Api;
+using CommandService;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
