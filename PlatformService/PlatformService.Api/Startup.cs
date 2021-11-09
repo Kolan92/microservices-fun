@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,10 +32,29 @@ public class Startup
     {
         if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
-        app.UseSwagger();
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.All
+        });
+        
+        app.UseSwagger(options => options.PreSerializeFilters.Add((swagger, httpReq) =>
+        {
+            if (httpReq.Headers.TryGetValue("X-Forwarded-Prefix", out var apiPrefix))
+            {
+                swagger.Servers = new List<OpenApiServer> { new() { Url = apiPrefix } };
+            }
+        }));
+
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            if (env.IsDevelopment())
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Platform V1");
+            }
+            else
+            {
+                c.SwaggerEndpoint("/platform-service/swagger/v1/swagger.json", "Platform V1");
+            }
             c.RoutePrefix = string.Empty;
         });
 

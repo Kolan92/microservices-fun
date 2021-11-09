@@ -6,10 +6,18 @@ namespace CommandService.Controllers;
 [Route("api/[controller]")]
 public class CommandController : ControllerBase
 {
+    private readonly ILogger<CommandController> logger;
+
+    public CommandController(ILogger<CommandController> logger)
+    {
+        this.logger = logger;
+    }
 
     [HttpPost]
     public IActionResult Test()
     {
-        return Ok("Command controller test ok");
+        var message = "Command controller test ok";
+        logger.LogInformation(message);
+        return Ok(message);
     }
 }

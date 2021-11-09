@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name:  commandservice
-          image:  kolan1992/command.service:alpha
+          image:  kolan1992/command.service:alpha-1636306745
+          imagePullPolicy: Always
 ---
 kind: Service
 apiVersion: v1

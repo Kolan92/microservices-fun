@@ -20,12 +20,15 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        
+        app.UsePathBase(new PathString("/command-service"));
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            c.RoutePrefix = string.Empty;            });
+            c.SwaggerEndpoint("/command-service/swagger/v1/swagger.json", "My API V1");
+            c.RoutePrefix = "docs";
+        });
 
         app.UseRouting();
 

@@ -21,7 +21,7 @@ public class CommandDataClient : ICommandDataClient
 
     public async Task SendPlatformToCommand(PlatformRead platform)
     {
-        var response = await httpClient.PostAsJsonAsync($"{commandServiceUrl}/api/Command", platform);
+        var response = await httpClient.PostAsJsonAsync($"{commandServiceUrl}/command-service/api/Command", platform);
         response.EnsureSuccessStatusCode();
     }
 }
