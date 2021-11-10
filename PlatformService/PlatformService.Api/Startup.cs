@@ -14,6 +14,8 @@ namespace PlatformService.Api;
 
 public class Startup
 {
+    private const string kubernetesPrefix = "/platform-service";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMemory"));
@@ -30,7 +32,10 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+        if (env.IsDevelopment()) 
+        {
+            app.UseDeveloperExceptionPage();
+        }
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
@@ -39,9 +44,9 @@ public class Startup
         
         app.UseSwagger(options => options.PreSerializeFilters.Add((swagger, httpReq) =>
         {
-            if (httpReq.Headers.TryGetValue("X-Forwarded-Prefix", out var apiPrefix))
+            if (httpReq.Headers.ContainsKey("X-Forwarded-Prefix"))
             {
-                swagger.Servers = new List<OpenApiServer> { new() { Url = apiPrefix } };
+                swagger.Servers = new List<OpenApiServer> { new() { Url = kubernetesPrefix } };
             }
         }));
 
@@ -49,18 +54,21 @@ public class Startup
         {
             if (env.IsDevelopment())
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Platform V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Command Service V1");
             }
             else
             {
-                c.SwaggerEndpoint("/platform-service/swagger/v1/swagger.json", "Platform V1");
+                c.SwaggerEndpoint($"{kubernetesPrefix}/swagger/v1/swagger.json", "Command Service V1");
             }
             c.RoutePrefix = string.Empty;
         });
 
         app.UseRouting();
 
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseEndpoints(endpoints => 
+        {
+            endpoints.MapControllers();
+        });
 
         DatabaseSetup.SeedDatabase(app);
     }

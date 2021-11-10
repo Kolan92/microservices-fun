@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/platform-service"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "true"
 spec:
   rules:
   - host: kube.demo
@@ -22,7 +22,7 @@ spec:
             port: 
               number: 80
       - pathType: Prefix
-        path: /command-service
+        path: /command-service(/|$)(.*)
         backend:
           service:
             name:  command-cluster-ip-service
