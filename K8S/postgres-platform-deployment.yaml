@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14.1
+        ports:
+          - containerPort: 5432
+        env:
+          - name: PGDATA
+            value: /var/opt/postgresql/data/pgdata
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-platform-secret
+                key: password
+        volumeMounts:
+          - mountPath: /var/opt/postgresql/data
+            name: postgresdb
+      volumes:
+      - name: postgresdb
+        persistentVolumeClaim:
+          claimName: postgres-claim
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  postgres-cluster-ip-service
+spec:
+  selector:
+    app:  postgres
+  type:  ClusterIP
+  ports:
+  - name:  postgres
+    protocol: TCP
+    port:  5432
+    targetPort:  5432
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  postgres-loadbalancer-service
+spec:
+  selector:
+    app:  postgres
+  type:  LoadBalancer
+  ports:
+  - protocol: TCP
+    port:  5432
+    targetPort:  5432
