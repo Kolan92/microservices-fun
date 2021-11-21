@@ -9,16 +9,23 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PlatformService.Api.Data;
 using PlatformService.Api.SyncDataServices.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace PlatformService.Api;
 
 public class Startup
 {
+    private readonly IConfiguration configuration;
     private const string kubernetesPrefix = "/platform-service";
+
+    public Startup(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMemory"));
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformPostgresDb")));
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddScoped<ICommandDataClient, CommandDataClient>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

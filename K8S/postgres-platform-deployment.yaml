@@ -25,6 +25,9 @@ spec:
               secretKeyRef:
                 name: postgres-platform-secret
                 key: password
+          - name: POSTGRES_HOST_AUTH_METHOD
+            #value: md5
+            value: trust
         volumeMounts:
           - mountPath: /var/opt/postgresql/data
             name: postgresdb
@@ -59,3 +62,18 @@ spec:
   - protocol: TCP
     port:  5432
     targetPort:  5432
+    nodePort: 32345
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  postgres-nodeport-service
+spec:
+  selector:
+    app:  postgres
+  type:  NodePort
+  ports:
+  - protocol: TCP
+    port:  5432
+    targetPort:  5432
+    nodePort: 32346

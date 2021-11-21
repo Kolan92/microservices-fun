@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PlatformService.Api.Models;
 
@@ -12,6 +14,8 @@ public static class DatabaseSetup
     {
         using var scope = applicationBuilder.ApplicationServices.CreateScope();
         var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+        
+        dbContext.Database.Migrate();
 
         if (dbContext.Platforms.Any())
         {
