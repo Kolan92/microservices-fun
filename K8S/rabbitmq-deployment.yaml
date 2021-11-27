@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        editor: vscode
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:management
+        ports:
+          - containerPort: 15672
+            name: rbmg-mngmt-port
+          - containerPort: 5672
+            name: rbmg-mess-port
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  rabbitmq-cluster-ip-service
+spec:
+  selector:
+    app:  rabbitmq
+  type:  ClusterIP
+  ports:
+  - name:  rbmg-mngmt-port
+    protocol: TCP
+    port:  15672
+    targetPort:  15672
+  - name:  rbmg-mess-port
+    protocol: TCP
+    port:  5672
+    targetPort:  5672
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  rabbitmq-nodeport-service
+spec:
+  selector:
+    app:  rabbitmq
+  type:  NodePort
+  ports:
+  - name:  rbmg-mngmt-port
+    protocol: TCP
+    port:  15672
+    targetPort:  15672
+    nodePort: 32172
+  - name:  rbmg-mess-port
+    protocol: TCP
+    port:  5672
+    targetPort:  5672
+    nodePort: 32072
