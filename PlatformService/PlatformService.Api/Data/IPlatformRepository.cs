@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Ardalis.GuardClauses;
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Api.Models;
 
@@ -44,7 +45,7 @@ public class PlatformRepository : IPlatformRepository
 
     public async ValueTask CreatePlatform(Platform platform)
     {
-        if (platform == null) throw new ArgumentNullException(nameof(platform));
+        Guard.Against.Null(platform, nameof(platform));
         await appDbContext.Platforms.AddAsync(platform);
     }
 }

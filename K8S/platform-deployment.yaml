@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name:  platformservice
-          image: kolan1992/platform.api:alpha-1636576523
+          image: kolan1992/platform.api:alpha-1637690832
           imagePullPolicy: Always
 ---
 kind: Service

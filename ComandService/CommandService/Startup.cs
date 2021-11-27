@@ -1,14 +1,28 @@
+using CommandService.Data;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace CommandService;
 
 public class Startup
 {
+    private readonly IConfiguration configuration;
     private const string kubernetesPrefix = "/command-service";
+    
+    public Startup(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
+    
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("CommandPostgresDb")));
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddHealthChecks()
+            .AddCheck("check", () => HealthCheckResult.Healthy("Health: OK"));
+        services.AddScoped<ICommandRepository, CommandRepository>();
         services.AddControllers();
         services.AddSwaggerGen(c =>
         {
@@ -53,7 +67,14 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapHealthChecks("/health");
             endpoints.MapControllers();
         });
+        
+        using var scope = app.ApplicationServices.CreateScope();
+
+        var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+        
+        dbContext.Database.Migrate();
     }
 }

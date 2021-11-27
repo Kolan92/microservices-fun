@@ -4,7 +4,8 @@ namespace PlatformService.Api.Models;
 
 public class Platform
 {
-    [Key] [Required] public int Id { get; set; }
+    [Key] 
+    [Required] public int Id { get; set; }
 
     [Required] public string Name { get; set; }
 
