@@ -1,4 +1,6 @@
+using CommandService.Configurations;
 using CommandService.Data;
+using CommandService.EventProcessing;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +21,21 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("CommandPostgresDb")));
+        
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        
         services.AddHealthChecks()
             .AddCheck("check", () => HealthCheckResult.Healthy("Health: OK"));
+        
         services.AddScoped<ICommandRepository, CommandRepository>();
+        services.AddScoped<IEventProcessor, EventProcessor>();
+        services.AddHostedService<MessageBusEventHandler>();
+        
+        services.AddOptions();
+        services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));
+        
         services.AddControllers();
+        
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommandService", Version = "v1" });

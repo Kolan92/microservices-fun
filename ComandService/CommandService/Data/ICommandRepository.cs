@@ -10,6 +10,7 @@ public interface ICommandRepository
     Task<List<Platform>> GetAllPlatforms();
     ValueTask CreatePlatform(Platform platform);
     Task<bool> PlatformExists(int platformId);
+    Task<bool> ExternalPlatformExists(int externalPlatformId);
 
 
     Task<List<Command>> GetPlatformCommands(int platformId);
@@ -39,6 +40,11 @@ public class CommandRepository : ICommandRepository
     public async ValueTask CreatePlatform(Platform platform)
     {
         await appDbContext.Platforms.AddAsync(platform);
+    }
+
+    public Task<bool> ExternalPlatformExists(int externalPlatformId)
+    {
+        return appDbContext.Platforms.AnyAsync(platform => platform.ExternalId == externalPlatformId);
     }
 
     public Task<bool> PlatformExists(int platformId)

@@ -10,7 +10,9 @@ using Microsoft.OpenApi.Models;
 using PlatformService.Api.Data;
 using PlatformService.Api.SyncDataServices.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using PlatformService.Api.AsyncDataServices;
+using PlatformService.Api.Configurations;
 
 namespace PlatformService.Api;
 
@@ -27,14 +29,22 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformPostgresDb")));
+        
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddScoped<ICommandDataClient, CommandDataClient>();
         services.AddSingleton<IMessageBusClient, MessageBusClient>();
+        
         services.AddOptions();
         services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));
+        
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        
+        services.AddHealthChecks()
+            .AddCheck("check", () => HealthCheckResult.Healthy("Health: OK"));
+        
         services.AddHttpClient();
         services.AddControllers();
+        
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlatformService", Version = "v1" });
@@ -78,6 +88,7 @@ public class Startup
 
         app.UseEndpoints(endpoints => 
         {
+            endpoints.MapHealthChecks("/health");
             endpoints.MapControllers();
         });
 

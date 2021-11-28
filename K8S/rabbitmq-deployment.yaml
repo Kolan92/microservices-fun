@@ -53,7 +53,7 @@ spec:
     protocol: TCP
     port:  15672
     targetPort:  15672
-    nodePort: 32172
+    nodePort: 31272
   - name:  rbmq-mess-port
     protocol: TCP
     port:  5672
