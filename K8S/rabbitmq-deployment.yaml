@@ -31,11 +31,11 @@ spec:
     app:  rabbitmq
   type:  ClusterIP
   ports:
-  - name:  rbmg-mngmt-port
+  - name:  rbmq-mngmt-port
     protocol: TCP
     port:  15672
     targetPort:  15672
-  - name:  rbmg-mess-port
+  - name:  rbmq-mess-port
     protocol: TCP
     port:  5672
     targetPort:  5672
@@ -43,18 +43,18 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name:  rabbitmq-nodeport-service
+  name:  rabbitmq-loadbalancer-service
 spec:
   selector:
     app:  rabbitmq
-  type:  NodePort
+  type:  LoadBalancer
   ports:
-  - name:  rbmg-mngmt-port
+  - name:  rbmq-mngmt-port
     protocol: TCP
     port:  15672
     targetPort:  15672
     nodePort: 32172
-  - name:  rbmg-mess-port
+  - name:  rbmq-mess-port
     protocol: TCP
     port:  5672
     targetPort:  5672

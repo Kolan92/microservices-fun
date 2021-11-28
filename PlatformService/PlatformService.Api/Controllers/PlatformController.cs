@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PlatformService.Api.AsyncDataServices;
 using PlatformService.Api.Data;
 using PlatformService.Api.Models;
 using PlatformService.Api.PublicModels;
@@ -16,13 +17,13 @@ public class PlatformController : ControllerBase
 {
     private readonly IMapper mapper;
     private readonly IPlatformRepository platformRepository;
-    private readonly ICommandDataClient commandDataClient;
+    private readonly IMessageBusClient messageBusClient; 
     
-    public PlatformController(IPlatformRepository platformRepository, IMapper mapper, ICommandDataClient commandDataClient)
+    public PlatformController(IPlatformRepository platformRepository, IMapper mapper, IMessageBusClient messageBusClient)
     {
         this.platformRepository = platformRepository;
         this.mapper = mapper;
-        this.commandDataClient = commandDataClient;
+        this.messageBusClient = messageBusClient;
     }
 
     [HttpGet]
@@ -54,7 +55,7 @@ public class PlatformController : ControllerBase
         platformRepository.SaveChanges();
 
         var platformRead = mapper.Map<PlatformRead>(platform);
-        await commandDataClient.SendPlatformToCommand(platformRead);
+        messageBusClient.PublishNewPlatform(mapper.Map<PlatformPublished>(platformRead));
         
         return CreatedAtRoute(nameof(GetById), new { platformRead.Id }, platform);
     }

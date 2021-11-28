@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using PlatformService.Api.Data;
 using PlatformService.Api.SyncDataServices.Http;
 using Microsoft.Extensions.Configuration;
+using PlatformService.Api.AsyncDataServices;
 
 namespace PlatformService.Api;
 
@@ -28,6 +29,9 @@ public class Startup
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformPostgresDb")));
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddScoped<ICommandDataClient, CommandDataClient>();
+        services.AddSingleton<IMessageBusClient, MessageBusClient>();
+        services.AddOptions();
+        services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddHttpClient();
         services.AddControllers();
