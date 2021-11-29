@@ -27,7 +27,11 @@ spec:
     app:  platformservice
   type:  ClusterIP
   ports:
-  - name:  platformservice
+  - name:  http
     protocol: TCP
     port:  80
     targetPort:  80
+  - name:  grpc
+    protocol: TCP
+    port:  666
+    targetPort:  666

@@ -1,6 +1,7 @@
 using CommandService.Configurations;
 using CommandService.Data;
 using CommandService.EventProcessing;
+using CommandService.SyncDataService.Grpc;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,9 @@ public class Startup
         
         services.AddScoped<ICommandRepository, CommandRepository>();
         services.AddScoped<IEventProcessor, EventProcessor>();
+        services.AddScoped<IPlatformDataService, PlatformDataService>();
         services.AddHostedService<MessageBusEventHandler>();
+        services.AddHostedService<PlatformInitiator>();
         
         services.AddOptions();
         services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));

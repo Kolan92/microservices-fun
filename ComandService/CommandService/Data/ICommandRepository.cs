@@ -8,7 +8,9 @@ public interface ICommandRepository
     void SaveChanges();
 
     Task<List<Platform>> GetAllPlatforms();
-    ValueTask CreatePlatform(Platform platform);
+    ValueTask CreatePlatform(Platform platform);  
+    ValueTask CreateMultiplePlatforms(IEnumerable<Platform> platform);
+
     Task<bool> PlatformExists(int platformId);
     Task<bool> ExternalPlatformExists(int externalPlatformId);
 
@@ -40,6 +42,11 @@ public class CommandRepository : ICommandRepository
     public async ValueTask CreatePlatform(Platform platform)
     {
         await appDbContext.Platforms.AddAsync(platform);
+    }
+
+    public async ValueTask CreateMultiplePlatforms(IEnumerable<Platform> platforms)
+    {
+        await appDbContext.Platforms.AddRangeAsync(platforms);
     }
 
     public Task<bool> ExternalPlatformExists(int externalPlatformId)

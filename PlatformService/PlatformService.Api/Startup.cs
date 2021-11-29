@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using PlatformService.Api.AsyncDataServices;
 using PlatformService.Api.Configurations;
+using PlatformService.Api.SyncDataServices.Grpc;
 
 namespace PlatformService.Api;
 
@@ -33,6 +36,8 @@ public class Startup
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddScoped<ICommandDataClient, CommandDataClient>();
         services.AddSingleton<IMessageBusClient, MessageBusClient>();
+
+        services.AddGrpc();
         
         services.AddOptions();
         services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));
@@ -90,6 +95,8 @@ public class Startup
         {
             endpoints.MapHealthChecks("/health");
             endpoints.MapControllers();
+
+            endpoints.MapGrpcService<GrpcPlatformService>();
         });
 
         DatabaseSetup.SeedDatabase(app);

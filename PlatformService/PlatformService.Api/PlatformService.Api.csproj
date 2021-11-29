@@ -11,6 +11,7 @@
     <ItemGroup>
       <PackageReference Include="Ardalis.GuardClauses" Version="3.3.0" />
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+      <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,6 +22,13 @@
       <PackageReference Include="ProxyKit.HttpOverrides" Version="1.1.0" />
       <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Protobuf Include="../../Protos/platforms.proto" GrpcService="Server">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <Link>platforms.proto</Link>
+      </Protobuf>
     </ItemGroup>
 
 </Project>
