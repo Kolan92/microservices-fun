@@ -7,12 +7,12 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY . .
 
-RUN dotnet restore "CommandService.csproj"
+RUN dotnet restore ComandService/CommandService/CommandService.csproj
 
-RUN dotnet build "CommandService.csproj" -c Release -o /app/build
+RUN dotnet build ComandService/CommandService/CommandService.csproj -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CommandService.csproj" -c Release -o /app/publish
+RUN dotnet publish ComandService/CommandService/CommandService.csproj -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

@@ -1,5 +1,6 @@
 using AutoMapper;
 using CommandService.Models;
+using Grpc.Core;
 using Grpc.Net.Client;
 using PlatformService;
 
@@ -25,10 +26,10 @@ public class PlatformDataService : IPlatformDataService
     {
         var httpHandler = new HttpClientHandler
         {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
         };
 
-        var channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions { HttpHandler = httpHandler });
+        using var channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions { HttpHandler = httpHandler , Credentials = ChannelCredentials.Insecure });
         var client = new GrpcPlatform.GrpcPlatformClient(channel);
         var request = new GetAllPlatformsRequest();
 

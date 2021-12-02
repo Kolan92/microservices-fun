@@ -16,6 +16,8 @@ public class PlatformInitiator : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        logger.LogInformation($"Starting platforms synchronization");
+        
         using var scope = scopeFactory.CreateScope();
         var platformClient = scope.ServiceProvider.GetRequiredService<IPlatformDataService>();
         var repository = scope.ServiceProvider.GetRequiredService<ICommandRepository>();
